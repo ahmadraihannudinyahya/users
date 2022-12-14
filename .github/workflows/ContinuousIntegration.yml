@@ -1,0 +1,44 @@
+name: Contionus Integration
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      rabbit:
+        image: rabbitmq:3.9.26-management-alpine
+        ports:
+        - 15672:15672
+        - 5672:5672
+      mongo: 
+        image: mongo:6.0.3-focal
+        ports:
+          - 2717:2717
+        
+    strategy:
+      matrix:
+        node-version: [14.x]
+        
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        
+    - name: npm install migrate and test
+      run: |
+        npm install
+        npm run queue-migrate
+        npm run test
+      env:
+        CI: true
+        PORT: 3000
+        MONGO_URL_TEST: mongodb://localhost:27017/test?maxPoolSize=20&w=majority
+        MONGO_URL: mongodb://localhost:27017/test?maxPoolSize=20&w=majority
+        RABBIT_URL_TEST: amqp://localhost:5672
+        RABBIT_URL: amqp://localhost:5672

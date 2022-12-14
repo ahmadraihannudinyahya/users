@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: users-rs
+spec:
+  replicas: 1
+  selector:
+    name: users
+  template:
+    metadata:
+      name: users
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: users
+          image: raihany4hy4/users:master
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env: 
+            - name: PORT
+              value: "3000"
+            - name: DB_HOST
+              value: "192.168.59.1"
+            - name: DB_USER
+              value: "developer"
+            - name: DB_PASSSWORD
+              value: "developer"
+            - name: DB_NAME
+              value: "holly_ways"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_DIALECT
+              value: "postgres"
+            - name: TOKENKEY
+              value: "supersecret"
+            - name: HOST
+              value: "http://hollyways.local"
+            - name: ENDPOINT_FILE
+              value: "/file"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-service
+  annotations:
+    konghq.com/path: "/api/v1"
+spec:
+  selector:
+    name: hollyways-backend
+  ports:
+    - port: 3000
+      targetPort: 3000
