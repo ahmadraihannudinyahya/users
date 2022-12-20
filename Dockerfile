@@ -4,6 +4,8 @@ WORKDIR ./app
 
 COPY --chown=node:node . .
 
+ENV PORT=3000
+
 EXPOSE 3000
 
 RUN npm install pm2 -g

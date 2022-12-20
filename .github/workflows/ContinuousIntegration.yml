@@ -17,7 +17,7 @@ jobs:
       mongo: 
         image: mongo:6.0.3-focal
         ports:
-          - 2717:2717
+          - 27017:27017
         
     strategy:
       matrix:
